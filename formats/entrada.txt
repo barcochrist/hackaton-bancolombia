@@ -1,0 +1,20 @@
+<General>
+TC:1
+<Mesa 1>
+UG:2
+RI:500000
+<Mesa 2>
+UG:1
+RF:500000
+<Mesa 3>
+UG:3
+TC:5
+RF:10000
+<Mesa 4>
+UG:1
+RF:100000
+<Mesa 5>
+UG:99
+<Mesa 6>
+TC:11
+RI:10000

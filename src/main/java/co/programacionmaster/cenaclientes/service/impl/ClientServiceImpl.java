@@ -89,7 +89,6 @@ public class ClientServiceImpl implements ClientService {
   }
 
   @Nonnull
-  @Override
   public List<ClientAccountPojo> getGuestsPerTable(
       @Nullable Integer type,
       @Nullable String location,

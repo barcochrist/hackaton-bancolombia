@@ -1,17 +1,12 @@
 package co.programacionmaster.cenaclientes.controller;
 
-import co.programacionmaster.cenaclientes.model.ClientAccountPojo;
-import co.programacionmaster.cenaclientes.model.TableFilterPojo;
 import co.programacionmaster.cenaclientes.service.ClientService;
 import com.google.common.io.Files;
 import io.vavr.control.Try;
-import java.math.BigDecimal;
-import java.util.List;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,36 +26,12 @@ public class ClientRestController {
 
   private final ClientService clientService;
 
-  @GetMapping("/guests")
-  public ResponseEntity<List<ClientAccountPojo>> guestsByTable(
-      @RequestParam(value = "type", required = false) Integer type,
-      @RequestParam(value = "location", required = false) String location,
-      @RequestParam(value = "initBalanceRange", required = false) BigDecimal initialBalanceRange,
-      @RequestParam(value = "endBalanceRange", required = false) BigDecimal endBalanceRange
-  ) {
-    return ResponseEntity.ok(
-        clientService.getGuestsPerTable(type, location, initialBalanceRange, endBalanceRange)
-    );
-  }
-
-  @PostMapping("/upload")
-  @ResponseStatus(HttpStatus.CREATED)
-  public ResponseEntity<List<TableFilterPojo>> upload(
-      @RequestParam("file") MultipartFile file
-  ) {
-    if (file.isEmpty()) {
-      throw new IllegalArgumentException(
-          "The file should not be empty, please upload a valid file");
-    }
-
-    var extension = Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
-    if (!TXT_EXTENSION.equals(extension)) {
-      throw new IllegalArgumentException("The file is not a txt file, please upload a valid file");
-    }
-
-    return ResponseEntity.ok(clientService.processFile(Try.of(file::getInputStream).get()));
-  }
-
+  /**
+   * Process entry file and create tables with guests codes.
+   *
+   * @param file Specific input format
+   * @return Formated string
+   */
   @PostMapping("/process")
   @ResponseStatus(HttpStatus.CREATED)
   public ResponseEntity<String> processFile(
@@ -76,8 +47,8 @@ public class ClientRestController {
       throw new IllegalArgumentException("The file is not a txt file, please upload a valid file");
     }
 
-    var response = clientService.processFile(Try.of(file::getInputStream).get());
-    var guestsPerTable = clientService.getGuestsPerTable(response);
+    var fileProcessed = clientService.processFile(Try.of(file::getInputStream).get());
+    var guestsPerTable = clientService.getGuestsPerTable(fileProcessed);
     return ResponseEntity.ok(clientService.parseResponse(guestsPerTable));
   }
 }

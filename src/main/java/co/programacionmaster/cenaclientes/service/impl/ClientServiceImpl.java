@@ -5,6 +5,7 @@ import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.maxBy;
 
 import co.programacionmaster.cenaclientes.model.ClientAccountPojo;
+import co.programacionmaster.cenaclientes.model.TableClientPojo;
 import co.programacionmaster.cenaclientes.model.TableFilterPojo;
 import co.programacionmaster.cenaclientes.repository.ClienJdbcRepository;
 import co.programacionmaster.cenaclientes.service.ClientService;
@@ -48,6 +49,30 @@ public class ClientServiceImpl implements ClientService {
 
   private final ClienJdbcRepository clienJdbcRepository;
   private final RestTemplate restTemplate;
+
+  @Nonnull
+  @Override
+  public List<TableClientPojo> getGuestsPerTable(List<TableFilterPojo> list) {
+    return list
+        .stream()
+        .map(filter -> {
+          var codes = this
+              .getGuestsPerTable(
+                  filter.getClientType(),
+                  filter.getLocation(),
+                  filter.getInitBalance(),
+                  filter.getEndBalance())
+              .stream()
+              .map(ClientAccountPojo::getCode)
+              .collect(Collectors.toList());
+
+          return TableClientPojo.from(
+              filter.getName(),
+              codes.size() < 4 ? "CANCELADA" : String.join(",", codes)
+          );
+        })
+        .collect(Collectors.toList());
+  }
 
   @Nonnull
   @Override
@@ -99,13 +124,13 @@ public class ClientServiceImpl implements ClientService {
         .stream()
         .collect(groupingBy(ClientAccountPojo::getMale));
 
-    var men = clients.get(1)
+    var men = clients.getOrDefault(1, List.of())
         .stream()
         .sorted(Comparator.comparing(ClientAccountPojo::getTotalBalance).reversed())
         .limit(4)
         .collect(Collectors.toList());
 
-    var women = clients.get(0)
+    var women = clients.getOrDefault(0, List.of())
         .stream()
         .sorted(Comparator.comparing(ClientAccountPojo::getTotalBalance).reversed())
         .limit(4)
@@ -117,8 +142,14 @@ public class ClientServiceImpl implements ClientService {
       men = men.subList(0, women.size());
     }
 
+    //TODO ordenar según el monto de sus cuentas de mayor a menor (y en caso de coincidir el monto, ordenado por código.
+    Comparator<ClientAccountPojo> comparator = Comparator
+        .comparing(ClientAccountPojo::getTotalBalance).reversed()
+        .thenComparing(ClientAccountPojo::getCode);
+
     return Stream
         .concat(men.stream(), women.stream())
+        .sorted(comparator)
         .collect(Collectors.toList());
   }
 
@@ -165,7 +196,7 @@ public class ClientServiceImpl implements ClientService {
     );
 
     if (HttpStatus.OK.equals(response.getStatusCode())) {
-      return response.getBody();
+      return response.getBody().replace("\"", "");
     } else {
       throw new RuntimeException("Error decrypting client code");
     }

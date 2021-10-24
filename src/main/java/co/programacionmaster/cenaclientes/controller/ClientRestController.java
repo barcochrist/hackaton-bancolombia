@@ -1,6 +1,7 @@
 package co.programacionmaster.cenaclientes.controller;
 
 import co.programacionmaster.cenaclientes.model.ClientAccountPojo;
+import co.programacionmaster.cenaclientes.model.TableClientPojo;
 import co.programacionmaster.cenaclientes.model.TableFilterPojo;
 import co.programacionmaster.cenaclientes.service.ClientService;
 import com.google.common.io.Files;
@@ -59,5 +60,24 @@ public class ClientRestController {
     }
 
     return ResponseEntity.ok(clientService.processFile(Try.of(file::getInputStream).get()));
+  }
+
+  @PostMapping("/process")
+  @ResponseStatus(HttpStatus.CREATED)
+  public ResponseEntity<List<TableClientPojo>> processFile(
+      @RequestParam("file") MultipartFile file
+  ) {
+    if (file.isEmpty()) {
+      throw new IllegalArgumentException(
+          "The file should not be empty, please upload a valid file");
+    }
+
+    var extension = Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
+    if (!TXT_EXTENSION.equals(extension)) {
+      throw new IllegalArgumentException("The file is not a txt file, please upload a valid file");
+    }
+
+    var response = clientService.processFile(Try.of(file::getInputStream).get());
+    return ResponseEntity.ok(clientService.getGuestsPerTable(response));
   }
 }

@@ -1,0 +1,94 @@
+{
+	"info": {
+		"_postman_id": "c528f588-2007-4455-b37f-37181de7cdf4",
+		"name": "Hackaton Bancolombia",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Process File",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/Users/barcochrist/Documents/Reto_Bancolombia/entrada.txt"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/clients/process",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"clients",
+						"process"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Process File",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/barcochrist/Documents/Reto_Bancolombia/entrada.txt"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/clients/process",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"clients",
+								"process"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "plain",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "text/plain;charset=UTF-8"
+						},
+						{
+							"key": "Content-Length",
+							"value": "322"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 24 Oct 2021 14:05:19 GMT"
+						},
+						{
+							"key": "Keep-Alive",
+							"value": "timeout=60"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						}
+					],
+					"cookie": [],
+					"body": "<General>\nC10039,C10129,C10105,C10126,C10091,C10051\n<Mesa 1>\nC10078,C10086,C10025,C10089,C10190,C10191,C10043,C10104\n<Mesa 2>\nC10144,C10070,C10076,C10134,C10151,C10090\n<Mesa 3>\nCANCELADA\n<Mesa 4>\nCANCELADA\n<Mesa 5>\nC10201,C10202,C10203,C10204,C10205,C10206,C10207,C10208\n<Mesa 6>\nC10186,C10116,C10088,C10169,C10209,C10178\n"
+				}
+			]
+		}
+	]
+}

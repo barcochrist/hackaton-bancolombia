@@ -1,7 +1,6 @@
 package co.programacionmaster.cenaclientes.controller;
 
 import co.programacionmaster.cenaclientes.model.ClientAccountPojo;
-import co.programacionmaster.cenaclientes.model.TableClientPojo;
 import co.programacionmaster.cenaclientes.model.TableFilterPojo;
 import co.programacionmaster.cenaclientes.service.ClientService;
 import com.google.common.io.Files;
@@ -64,7 +63,7 @@ public class ClientRestController {
 
   @PostMapping("/process")
   @ResponseStatus(HttpStatus.CREATED)
-  public ResponseEntity<List<TableClientPojo>> processFile(
+  public ResponseEntity<String> processFile(
       @RequestParam("file") MultipartFile file
   ) {
     if (file.isEmpty()) {
@@ -78,6 +77,7 @@ public class ClientRestController {
     }
 
     var response = clientService.processFile(Try.of(file::getInputStream).get());
-    return ResponseEntity.ok(clientService.getGuestsPerTable(response));
+    var guestsPerTable = clientService.getGuestsPerTable(response);
+    return ResponseEntity.ok(clientService.parseResponse(guestsPerTable));
   }
 }

@@ -71,7 +71,21 @@ public class ClientServiceImpl implements ClientService {
               codes.size() < 4 ? "CANCELADA" : String.join(",", codes)
           );
         })
+        .sorted(Comparator.comparing(TableClientPojo::getTableName))
         .collect(Collectors.toList());
+  }
+
+  @Nonnull
+  @Override
+  public String parseResponse(List<TableClientPojo> entry) {
+    var stringBuilder = new StringBuilder();
+    entry
+        .stream()
+        .forEach(tcp -> {
+          stringBuilder.append("<").append(tcp.getTableName()).append(">").append("\n");
+          stringBuilder.append(tcp.getResponse()).append("\n");
+        });
+    return stringBuilder.toString();
   }
 
   @Nonnull
@@ -206,7 +220,7 @@ public class ClientServiceImpl implements ClientService {
   @Override
   public List<TableFilterPojo> processFile(InputStream inputStream) {
     return Try.of(() -> {
-      StringBuilder scannedTables = new StringBuilder();
+      var scannedTables = new StringBuilder();
       try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
         String line;
         while ((line = reader.readLine()) != null) {

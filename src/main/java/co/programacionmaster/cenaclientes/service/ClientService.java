@@ -29,4 +29,7 @@ public interface ClientService {
 
   @Nonnull
   List<TableClientPojo> getGuestsPerTable(List<TableFilterPojo> list);
+
+  @Nonnull
+  String parseResponse(List<TableClientPojo> entry);
 }
